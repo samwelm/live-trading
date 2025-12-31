@@ -205,10 +205,10 @@ class StreamConfig:
                 if not isinstance(settings, dict):
                     errors.append(f"pair_settings.{pair} must be an object")
                     continue
-                if "brick_size" not in settings:
-                    warnings.append(f"pair_settings.{pair}.brick_size is missing")
-                if "start_date" not in settings:
-                    warnings.append(f"pair_settings.{pair}.start_date is missing")
+                if settings.get("brick_size") is None:
+                    errors.append(f"pair_settings.{pair}.brick_size is missing")
+                if settings.get("start_date") is None:
+                    errors.append(f"pair_settings.{pair}.start_date is missing")
                 granularity = settings.get("granularity")
                 if granularity is not None and not isinstance(granularity, str):
                     errors.append(f"pair_settings.{pair}.granularity must be a string")

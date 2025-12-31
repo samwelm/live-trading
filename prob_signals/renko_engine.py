@@ -28,6 +28,19 @@ from core.signals import PivotSignal
 logger = logging.getLogger(__name__)
 
 
+def _parse_start_date(value: object) -> Optional[datetime]:
+    if value is None:
+        return None
+    if isinstance(value, datetime):
+        if value.tzinfo is None:
+            return value.replace(tzinfo=timezone.utc)
+        return value.astimezone(timezone.utc)
+    parsed = pd.to_datetime(value, utc=True, errors="coerce")
+    if pd.isna(parsed):
+        return None
+    return parsed.to_pydatetime()
+
+
 @dataclass(repr=False, slots=True)
 class RenkoState:
     """State tracking for a single pair's Renko processing."""
@@ -171,7 +184,13 @@ class RenkoEngine(threading.Thread):
         self.states: Dict[str, RenkoState] = {}
         for pair, cfg in pairs_config.items():
             brick_size = cfg['brick_size'] * (10 ** cfg['pip_location'])
-            start_date = cfg.get('start_date', '2024-01-01T00:00:00Z')
+            start_date = cfg.get('start_date')
+            if start_date is None:
+                logger.warning(
+                    "%s: start_date missing; defaulting to 2024-01-01T00:00:00Z",
+                    pair,
+                )
+                start_date = "2024-01-01T00:00:00Z"
             pair_meta = get_pair_config(pair)
             spread_pips = pair_meta.get("spread_pips", 1.8)
             self.states[pair] = RenkoState(pair, brick_size, start_date, spread_pips, self.granularity)
@@ -325,10 +344,14 @@ class RenkoEngine(threading.Thread):
                         logger.warning(f"{pair}: Failed to move corrupt candle file: {move_exc}")
                     m1_df = None
 
+                start_dt = _parse_start_date(state.start_date)
+                if start_dt is None:
+                    logger.error("%s: Invalid start_date %r", pair, state.start_date)
+                    return
+
                 # Filter from start_date
                 if m1_df is not None and not m1_df.empty:
-                    start_date = pd.to_datetime(state.start_date)
-                    m1_df = m1_df[m1_df['time'] >= start_date].copy()
+                    m1_df = m1_df[m1_df['time'] >= start_dt].copy()
                     m1_df.reset_index(drop=True, inplace=True)
 
                 if m1_df is not None:
@@ -340,14 +363,13 @@ class RenkoEngine(threading.Thread):
 
                 if m1_df is not None and not m1_df.empty:
                     first_in_file = m1_df.iloc[0]['time']
-                    start_date = pd.to_datetime(state.start_date)
-                    leading_gap = first_in_file - start_date
+                    leading_gap = first_in_file - start_dt
                     if leading_gap > timedelta(days=2):
                         logger.info(
-                            f"{pair}: Backfilling {self.granularity} from {start_date} to {first_in_file} "
+                            f"{pair}: Backfilling {self.granularity} from {start_dt} to {first_in_file} "
                             f"(file starts later)"
                         )
-                        backfill_df = fetch_range(start_date, first_in_file)
+                        backfill_df = fetch_range(start_dt, first_in_file)
                         if backfill_df is not None and not backfill_df.empty:
                             m1_df = pd.concat([backfill_df, m1_df], ignore_index=True)
                             m1_df.drop_duplicates(subset=['time'], inplace=True)
@@ -398,7 +420,10 @@ class RenkoEngine(threading.Thread):
             if m1_df is None or m1_df.empty:
                 # Fallback: Use collect_data.py to fetch from start_date
                 logger.warning(f"{pair}: No {self.granularity} file found, collecting from {state.start_date} to now...")
-                from_date = pd.to_datetime(state.start_date)
+                from_date = _parse_start_date(state.start_date)
+                if from_date is None:
+                    logger.error("%s: Invalid start_date %r", pair, state.start_date)
+                    return
                 to_date = datetime.now(timezone.utc)
                 m1_df = fetch_range(from_date, to_date)
 

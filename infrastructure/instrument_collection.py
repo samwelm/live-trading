@@ -22,7 +22,7 @@ class InstrumentCollection:
         self.instruments_dict = {}
         fileName = f"{path}/{self.FILENAME}"
         with open(fileName, "r") as f:
-            data = json.loads(f.read())
+            data = json.load(f)
             for k, v in data.items():
                 self.instruments_dict[k] = Instrument.from_api(v)
 
@@ -41,7 +41,8 @@ class InstrumentCollection:
             f.write(json.dumps(instruments_dict, indent=2))
 
     def PrintInstruments(self) -> None:
-        [print(k, v) for k, v in self.instruments_dict.items()]
+        for key, value in self.instruments_dict.items():
+            print(key, value)
         print(len(self.instruments_dict.keys()), "instruments")
 
 

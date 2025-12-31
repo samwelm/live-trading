@@ -188,6 +188,7 @@ def start_candle_maintenance(
     pairs: list[str],
     granularity: str,
     start_dates: dict[str, object] | None = None,
+    data_dir: str = "./data",
     interval_seconds: int = 300,
 ) -> threading.Thread:
     """Periodically run update_all_pairs to refresh candle pickles."""
@@ -201,7 +202,7 @@ def start_candle_maintenance(
                 update_all_pairs(
                     pairs=pairs,
                     granularity=granularity,
-                    data_dir="./data",
+                    data_dir=data_dir,
                     api=api,
                     force_save=True,
                     start_dates=start_dates,

@@ -175,6 +175,7 @@ def main() -> None:
         pairs,
         granularity,
         start_dates=start_dates,
+        data_dir=data_dir,
         interval_seconds=maintenance_interval,
     )
 
