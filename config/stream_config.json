@@ -1,0 +1,264 @@
+{
+    "global_settings": {
+        "granularity": "M1",
+        "default_brick_size": 10,
+        "default_start_date": "2025-06-01T00:00:00Z",
+        "warmup_bricks": 100,
+        "pivot_lookback": 10,
+        "cache_interval_bricks": 100,
+        "log_brick_finalized": true,
+        "max_concurrent_pairs": 28,
+        "signal_stale_minutes": 3,
+        "target_bricks": 4,
+        "stop_bricks": 2,
+        "strategy_id": "renko_ml_v1",
+        "renko_mode": "hybrid",
+        "feature_k_lags": 12,
+        "include_speed": true,
+        "ev_threshold": 0.0,
+        "ev_rollover": true,
+        "enable_pivot_signals": false,
+        "risk": {
+            "type": "percent",
+            "value": 0.0007142857142857143,
+            "comment": "2% total / 28 pairs = 0.0714% per trade"
+        },
+        "trading_schedule": {
+            "timezone": "America/Chicago",
+            "disabled_weekdays": [
+                "Sunday"
+            ],
+            "comment": "Disable Sunday entries due to negative backtest performance (-19.58 bricks drag)"
+        }
+    },
+    "disabled_pairs": {
+        "comment": "Top-10 live list in use; no disabled pairs configured",
+        "pairs": {}
+    },
+    "pair_settings": {
+        "GBP_JPY": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "EUR_JPY": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "USD_JPY": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "CHF_JPY": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "GBP_CAD": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "EUR_AUD": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "GBP_AUD": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "EUR_CAD": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "EUR_CHF": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "EUR_NZD": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "AUD_JPY": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "GBP_NZD": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "GBP_USD": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "EUR_USD": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "CAD_JPY": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "USD_CAD": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "NZD_CHF": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "AUD_CAD": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "NZD_USD": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "NZD_JPY": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "GBP_CHF": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "NZD_CAD": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "AUD_USD": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "CAD_CHF": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "EUR_GBP": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "AUD_CHF": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "USD_CHF": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        },
+        "AUD_NZD": {
+            "brick_size": 10,
+            "start_date": "2025-06-01T00:00:00Z",
+            "risk": {
+                "type": "percent",
+                "value": 0.0007142857142857143
+            }
+        }
+    }
+}

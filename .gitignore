@@ -1,0 +1,13 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+.env
+
+logs/
+state/
+
+# Ignore all csv and pkl files
+*.csv
+*.pkl
+data/*.corrupt_*
