@@ -71,6 +71,8 @@ class GlobalSettings:
         "include_speed",
         "ev_threshold",
         "ev_rollover",
+        "rollover_cap_strategy",
+        "rollover_cap_limit",
         "enable_pivot_signals",
         "risk",
         "trading_schedule",
@@ -95,6 +97,8 @@ class GlobalSettings:
     include_speed: Optional[bool] = None
     ev_threshold: Optional[float] = None
     ev_rollover: Optional[bool] = None
+    rollover_cap_strategy: Optional[str] = None
+    rollover_cap_limit: Optional[int] = None
     enable_pivot_signals: Optional[bool] = None
     risk: Optional[RiskConfig] = None
     trading_schedule: Optional[TradingSchedule] = None

@@ -17,6 +17,8 @@
         "include_speed": true,
         "ev_threshold": 0.0,
         "ev_rollover": true,
+        "rollover_cap_strategy": "cap_at_consecutive",
+        "rollover_cap_limit": 3,
         "enable_pivot_signals": false,
         "risk": {
             "type": "percent",

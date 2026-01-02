@@ -75,6 +75,9 @@ def run_trading_loop(
     reverse_max_attempts = 6
     ev_signal_cache: dict[tuple[str, int], EvSignalInfo] = {}
     ev_signal_cache_keep = 50
+    rollover_cap_strategy = str(global_settings.get("rollover_cap_strategy", "") or "").lower()
+    rollover_cap_limit = max(int(global_settings.get("rollover_cap_limit", 0) or 0), 0)
+    cap_rollover_enabled = rollover_cap_strategy == "cap_at_consecutive" and rollover_cap_limit > 0
 
     while True:
         now_ts = time.time()
@@ -374,19 +377,26 @@ def run_trading_loop(
             trade_id = signal.get("trade_id")
             exit_brick_index = signal.get("exit_brick_index")
             direction = str(signal.get("direction") or "").upper()
+            reason = signal.get("reason", "exit")
+            segment_outcome = "NEUTRAL"
+            reason_lower = str(reason).lower()
+            if "target" in reason_lower:
+                segment_outcome = "WIN"
+            elif "stop" in reason_lower:
+                segment_outcome = "LOSS"
 
             logger.info(
                 "%s: Exit trigger %s "
                 "(net=%s for=%s against=%s)",
                 pair,
-                signal.get("reason"),
+                reason,
                 signal.get("net_bricks"),
                 signal.get("bricks_for"),
                 signal.get("bricks_against"),
             )
 
             if not ev_rollover_enabled or exit_brick_index is None:
-                success = trade_manager.close_position(pair, signal.get("reason", "exit"))
+                success = trade_manager.close_position(pair, reason)
                 if not success and trade_id:
                     trade_ledger.clear_pending_close(trade_id)
                 continue
@@ -394,13 +404,31 @@ def run_trading_loop(
             brick_info = trade_ledger.get_brick_ev_info(pair, exit_brick_index)
             ev_signal_value = brick_info.get("ev_signal") if brick_info else None
             if ev_signal_value not in (1, -1):
-                success = trade_manager.close_position(pair, signal.get("reason", "exit"))
+                success = trade_manager.close_position(pair, reason)
                 if not success and trade_id:
                     trade_ledger.clear_pending_close(trade_id)
                 continue
 
             ev_direction = "BUY" if ev_signal_value == 1 else "SELL"
             if ev_direction == direction:
+                if cap_rollover_enabled and trade_id:
+                    should_cap, projected = trade_ledger.should_cap_rollover(
+                        trade_id,
+                        segment_outcome,
+                        cap_limit=rollover_cap_limit,
+                    )
+                    if should_cap:
+                        cap_reason = f"cap_{rollover_cap_limit}_consecutive_losses"
+                        logger.info(
+                            "%s: Cap triggered after %s consecutive losses (exit=%s) - closing",
+                            pair,
+                            projected,
+                            reason,
+                        )
+                        success = trade_manager.close_position(pair, cap_reason)
+                        if not success and trade_id:
+                            trade_ledger.clear_pending_close(trade_id)
+                        continue
                 ev_signal = ev_signal_cache.get((pair, exit_brick_index))
                 rollover_time = None
                 if ev_signal:
@@ -408,18 +436,30 @@ def run_trading_loop(
                 elif brick_info:
                     rollover_time = brick_info.get("brick_time")
                 if trade_id:
-                    trade_ledger.rollover_trade(trade_id, exit_brick_index, rollover_time)
+                    trade_ledger.rollover_trade(
+                        trade_id,
+                        exit_brick_index,
+                        rollover_time,
+                        segment_outcome=segment_outcome,
+                    )
+                consecutive = (
+                    trade_ledger.get_consecutive_negative_count(trade_id)
+                    if trade_id
+                    else None
+                )
                 logger.info(
-                    "%s: EV rollover on brick %s (%s) -> reset +%s/-%s",
+                    "%s: EV rollover on brick %s (%s) -> reset +%s/-%s (segment=%s, losses=%s)",
                     pair,
                     exit_brick_index,
                     direction,
                     trade_manager.target_bricks,
                     trade_manager.stop_bricks,
+                    segment_outcome,
+                    consecutive if consecutive is not None else "n/a",
                 )
                 continue
 
-            success = trade_manager.close_position(pair, signal.get("reason", "exit"))
+            success = trade_manager.close_position(pair, reason)
             if not success:
                 if trade_id:
                     trade_ledger.clear_pending_close(trade_id)

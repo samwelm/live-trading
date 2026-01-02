@@ -6,169 +6,169 @@
     {
       "pair": "GBP_JPY",
       "name": "GBP_JPY_dual",
-      "model_path": "generalizers/USD_JPY_M1_dual_models.pkl",
+      "model_path": "generalizers/GBP_NZD_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "EUR_JPY",
       "name": "EUR_JPY_dual",
-      "model_path": "generalizers/GBP_CAD_M1_dual_models.pkl",
+      "model_path": "generalizers/EUR_AUD_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "USD_JPY",
       "name": "USD_JPY_dual",
-      "model_path": "generalizers/NZD_JPY_M1_dual_models.pkl",
+      "model_path": "generalizers/GBP_NZD_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "CHF_JPY",
       "name": "CHF_JPY_dual",
-      "model_path": "generalizers/GBP_CAD_M1_dual_models.pkl",
+      "model_path": "generalizers/GBP_AUD_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "GBP_CAD",
       "name": "GBP_CAD_dual",
-      "model_path": "generalizers/NZD_JPY_M1_dual_models.pkl",
+      "model_path": "generalizers/EUR_AUD_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "EUR_AUD",
       "name": "EUR_AUD_dual",
-      "model_path": "generalizers/NZD_CHF_M1_dual_models.pkl",
+      "model_path": "generalizers/EUR_CAD_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "GBP_AUD",
       "name": "GBP_AUD_dual",
-      "model_path": "generalizers/NZD_JPY_M1_dual_models.pkl",
+      "model_path": "generalizers/EUR_AUD_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "EUR_CAD",
       "name": "EUR_CAD_dual",
-      "model_path": "generalizers/NZD_CHF_M1_dual_models.pkl",
+      "model_path": "generalizers/EUR_NZD_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "EUR_CHF",
       "name": "EUR_CHF_dual",
-      "model_path": "generalizers/NZD_JPY_M1_dual_models.pkl",
+      "model_path": "generalizers/EUR_JPY_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "EUR_NZD",
       "name": "EUR_NZD_dual",
-      "model_path": "generalizers/NZD_JPY_M1_dual_models.pkl",
+      "model_path": "generalizers/GBP_CAD_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "AUD_JPY",
       "name": "AUD_JPY_dual",
-      "model_path": "generalizers/NZD_JPY_M1_dual_models.pkl",
+      "model_path": "generalizers/EUR_NZD_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "GBP_NZD",
       "name": "GBP_NZD_dual",
-      "model_path": "generalizers/GBP_JPY_M1_dual_models.pkl",
+      "model_path": "generalizers/USD_CAD_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "GBP_USD",
       "name": "GBP_USD_dual",
-      "model_path": "generalizers/NZD_JPY_M1_dual_models.pkl",
+      "model_path": "generalizers/EUR_JPY_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "EUR_USD",
       "name": "EUR_USD_dual",
-      "model_path": "generalizers/NZD_JPY_M1_dual_models.pkl",
+      "model_path": "generalizers/EUR_NZD_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "CAD_JPY",
       "name": "CAD_JPY_dual",
-      "model_path": "generalizers/AUD_NZD_M1_dual_models.pkl",
+      "model_path": "generalizers/EUR_AUD_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "USD_CAD",
       "name": "USD_CAD_dual",
-      "model_path": "generalizers/NZD_CHF_M1_dual_models.pkl",
+      "model_path": "generalizers/USD_CAD_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "NZD_CHF",
       "name": "NZD_CHF_dual",
-      "model_path": "generalizers/EUR_AUD_M1_dual_models.pkl",
+      "model_path": "generalizers/GBP_USD_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "AUD_CAD",
       "name": "AUD_CAD_dual",
-      "model_path": "generalizers/NZD_JPY_M1_dual_models.pkl",
+      "model_path": "generalizers/EUR_JPY_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "NZD_USD",
       "name": "NZD_USD_dual",
-      "model_path": "generalizers/EUR_JPY_M1_dual_models.pkl",
+      "model_path": "generalizers/EUR_AUD_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "NZD_JPY",
       "name": "NZD_JPY_dual",
-      "model_path": "generalizers/GBP_CHF_M1_dual_models.pkl",
+      "model_path": "generalizers/EUR_AUD_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "GBP_CHF",
       "name": "GBP_CHF_dual",
-      "model_path": "generalizers/GBP_JPY_M1_dual_models.pkl",
+      "model_path": "generalizers/GBP_NZD_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "NZD_CAD",
       "name": "NZD_CAD_dual",
-      "model_path": "generalizers/EUR_JPY_M1_dual_models.pkl",
+      "model_path": "generalizers/GBP_NZD_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "AUD_USD",
       "name": "AUD_USD_dual",
-      "model_path": "generalizers/GBP_CHF_M1_dual_models.pkl",
+      "model_path": "generalizers/EUR_USD_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "CAD_CHF",
       "name": "CAD_CHF_dual",
-      "model_path": "generalizers/AUD_USD_M1_dual_models.pkl",
+      "model_path": "generalizers/USD_JPY_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "EUR_GBP",
       "name": "EUR_GBP_dual",
-      "model_path": "generalizers/EUR_AUD_M1_dual_models.pkl",
+      "model_path": "generalizers/GBP_JPY_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "AUD_CHF",
       "name": "AUD_CHF_dual",
-      "model_path": "generalizers/EUR_JPY_M1_dual_models.pkl",
+      "model_path": "generalizers/GBP_AUD_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "USD_CHF",
       "name": "USD_CHF_dual",
-      "model_path": "generalizers/GBP_USD_M1_dual_models.pkl",
+      "model_path": "generalizers/GBP_CHF_M1_dual_models.pkl",
       "threshold": 0.6
     },
     {
       "pair": "AUD_NZD",
       "name": "AUD_NZD_dual",
-      "model_path": "generalizers/EUR_NZD_M1_dual_models.pkl",
+      "model_path": "generalizers/CHF_JPY_M1_dual_models.pkl",
       "threshold": 0.6
     }
   ]

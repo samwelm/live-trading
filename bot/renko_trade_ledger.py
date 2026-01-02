@@ -134,7 +134,9 @@ class RenkoTradeLedger:
                     chain_step_count INTEGER,
                     current_cum_reward INTEGER,
                     chain_cum_reward INTEGER,
-                    reset_count INTEGER
+                    reset_count INTEGER,
+                    consecutive_negative_resets INTEGER DEFAULT 0,
+                    last_segment_outcome TEXT
                 )
                 """
             )
@@ -169,6 +171,8 @@ class RenkoTradeLedger:
             ("current_cum_reward", "INTEGER"),
             ("chain_cum_reward", "INTEGER"),
             ("reset_count", "INTEGER"),
+            ("consecutive_negative_resets", "INTEGER DEFAULT 0"),
+            ("last_segment_outcome", "TEXT"),
         ):
             if name not in existing:
                 conn.execute(f"ALTER TABLE renko_open_trades ADD COLUMN {name} {col_type}")
@@ -406,7 +410,8 @@ class RenkoTradeLedger:
             "SELECT trade_id, pair, strategy_id, direction, entry_time, entry_time_ts, entry_brick_index, "
             "target_bricks, stop_bricks, tp_price, sl_price, "
             "chain_start_brick_index, last_reset_brick_index, last_seen_brick_index, last_seen_brick_time, "
-            "current_step_count, chain_step_count, current_cum_reward, chain_cum_reward, reset_count "
+            "current_step_count, chain_step_count, current_cum_reward, chain_cum_reward, reset_count, "
+            "consecutive_negative_resets, last_segment_outcome "
             "FROM renko_open_trades"
         )
         params = ()
@@ -443,8 +448,9 @@ class RenkoTradeLedger:
                 (trade_id, pair, strategy_id, direction, entry_time, entry_time_ts, entry_brick_index,
                  target_bricks, stop_bricks, tp_price, sl_price,
                  chain_start_brick_index, last_reset_brick_index, last_seen_brick_index, last_seen_brick_time,
-                 current_step_count, chain_step_count, current_cum_reward, chain_cum_reward, reset_count)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 current_step_count, chain_step_count, current_cum_reward, chain_cum_reward, reset_count,
+                 consecutive_negative_resets, last_segment_outcome)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(trade_id) DO UPDATE SET
                     pair = excluded.pair,
                     strategy_id = excluded.strategy_id,
@@ -464,7 +470,15 @@ class RenkoTradeLedger:
                     chain_step_count = COALESCE(renko_open_trades.chain_step_count, excluded.chain_step_count),
                     current_cum_reward = COALESCE(renko_open_trades.current_cum_reward, excluded.current_cum_reward),
                     chain_cum_reward = COALESCE(renko_open_trades.chain_cum_reward, excluded.chain_cum_reward),
-                    reset_count = COALESCE(renko_open_trades.reset_count, excluded.reset_count)
+                    reset_count = COALESCE(renko_open_trades.reset_count, excluded.reset_count),
+                    consecutive_negative_resets = COALESCE(
+                        renko_open_trades.consecutive_negative_resets,
+                        excluded.consecutive_negative_resets
+                    ),
+                    last_segment_outcome = COALESCE(
+                        renko_open_trades.last_segment_outcome,
+                        excluded.last_segment_outcome
+                    )
                 """,
                 (
                     trade_id,
@@ -487,6 +501,8 @@ class RenkoTradeLedger:
                     0,
                     0,
                     0,
+                    0,
+                    "NEUTRAL",
                 ),
             )
 
@@ -647,10 +663,35 @@ class RenkoTradeLedger:
         trade_id: str,
         new_entry_brick_index: int,
         entry_time: Optional[datetime] = None,
+        segment_outcome: str = "NEUTRAL",
     ) -> bool:
         entry_dt = _to_datetime(entry_time) if entry_time is not None else None
+        outcome = str(segment_outcome or "NEUTRAL").upper()
+        if outcome not in ("WIN", "LOSS", "NEUTRAL"):
+            outcome = "NEUTRAL"
         with self.lock:
             with self._connect() as conn:
+                row = conn.execute(
+                    """
+                    SELECT consecutive_negative_resets
+                    FROM renko_open_trades
+                    WHERE trade_id = ?
+                    """,
+                    (trade_id,),
+                ).fetchone()
+                if not row:
+                    return False
+                current_consecutive = (
+                    int(row["consecutive_negative_resets"])
+                    if row["consecutive_negative_resets"] is not None
+                    else 0
+                )
+                if outcome == "LOSS":
+                    new_consecutive = current_consecutive + 1
+                elif outcome == "WIN":
+                    new_consecutive = 0
+                else:
+                    new_consecutive = current_consecutive
                 cur = conn.execute(
                     """
                     UPDATE renko_open_trades
@@ -659,18 +700,63 @@ class RenkoTradeLedger:
                         last_seen_brick_time = COALESCE(?, last_seen_brick_time),
                         current_step_count = 0,
                         current_cum_reward = 0,
-                        reset_count = COALESCE(reset_count, 0) + 1
+                        reset_count = COALESCE(reset_count, 0) + 1,
+                        consecutive_negative_resets = ?,
+                        last_segment_outcome = ?
                     WHERE trade_id = ?
                     """,
                     (
                         int(new_entry_brick_index),
                         int(new_entry_brick_index),
                         _format_dt(entry_dt) if entry_dt is not None else None,
+                        int(new_consecutive),
+                        outcome,
                         trade_id,
                     ),
                 )
             self.pending_closes.discard(trade_id)
         return bool(cur.rowcount and cur.rowcount > 0)
+
+    def get_consecutive_negative_count(self, trade_id: str) -> int:
+        with self.lock:
+            with self._connect() as conn:
+                row = conn.execute(
+                    """
+                    SELECT consecutive_negative_resets
+                    FROM renko_open_trades
+                    WHERE trade_id = ?
+                    """,
+                    (trade_id,),
+                ).fetchone()
+        if row and row["consecutive_negative_resets"] is not None:
+            return int(row["consecutive_negative_resets"])
+        return 0
+
+    def projected_consecutive_negative_count(self, trade_id: str, segment_outcome: str) -> int:
+        outcome = str(segment_outcome or "NEUTRAL").upper()
+        if outcome not in ("WIN", "LOSS", "NEUTRAL"):
+            outcome = "NEUTRAL"
+        current = self.get_consecutive_negative_count(trade_id)
+        if outcome == "LOSS":
+            return current + 1
+        if outcome == "WIN":
+            return 0
+        return current
+
+    def should_cap_rollover(
+        self,
+        trade_id: str,
+        segment_outcome: str,
+        cap_limit: int = 3,
+    ) -> tuple[bool, int]:
+        outcome = str(segment_outcome or "NEUTRAL").upper()
+        if outcome not in ("WIN", "LOSS", "NEUTRAL"):
+            outcome = "NEUTRAL"
+        projected = self.projected_consecutive_negative_count(trade_id, outcome)
+        if cap_limit > 0 and outcome == "LOSS":
+            if projected >= cap_limit:
+                return True, projected
+        return False, projected
 
     def record_entry(
         self,
